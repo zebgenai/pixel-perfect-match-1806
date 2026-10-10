@@ -221,7 +221,7 @@ function Contact() {
             ))}
           </dl>
         </Reveal>
-        <Reveal index={1}><ContactForm /></Reveal>
+        <Reveal index={1}><CursorGlow className="p-6 md:p-8"><ContactForm /></CursorGlow></Reveal>
       </div>
     </section>
   );
