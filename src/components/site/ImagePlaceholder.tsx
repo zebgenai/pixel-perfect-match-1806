@@ -18,7 +18,7 @@ export function ImagePlaceholder({ ratio, caption, tone = "sand", className }: I
         role="img"
         aria-label={`${ratio} — ${caption}`}
         style={{ aspectRatio: `${w} / ${h}` }}
-        className={cn("relative w-full", tone === "sand" ? "bg-sand" : "bg-ink-raised")}
+        className={cn("relative w-full", tone === "sand" ? "bg-sand outline outline-1 -outline-offset-1 outline-line" : "bg-ink-raised")}
         initial={reduced ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
         whileInView={reduced ? { opacity: 1 } : { clipPath: "inset(0 0 0% 0)" }}
         viewport={{ once: true, amount: 0.2 }}
