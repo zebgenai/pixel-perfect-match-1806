@@ -2,77 +2,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Download, ArrowUpRight } from "lucide-react";
 import { useLang } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
-
-const field = "mt-2 block w-full rounded-md border border-input bg-background px-4 py-3 text-foreground transition-colors focus:border-brand focus:outline-none";
-
+import { Button } from "@/components/ui/button";
 export function ContactForm() {
-  const { content: t } = useLang();
-  const f = t.contact.form;
-  const [sent, setSent] = useState(false);
-  const schema = useMemo(
-    () =>
-      z.object({
-        name: z.string().trim().min(2, f.errors.name).max(100),
-        email: z.string().trim().email(f.errors.email).max(255),
-        service: z.string(),
-        message: z.string().trim().min(10, f.errors.message).max(2000),
-      }),
-    [f],
-  );
-  type V = z.infer<typeof schema>;
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<V>({
-    resolver: zodResolver(schema),
-    defaultValues: { name: "", email: "", service: f.options[0] ?? "", message: "" },
-  });
-
-  if (sent) {
-    return (
-      <div role="status" className="rounded-lg border border-border bg-surface p-10">
-        <p className="text-2xl font-bold">{f.success}</p>
-        <button type="button" onClick={() => setSent(false)} className="btn-ghost mt-6">{f.again}</button>
-      </div>
-    );
-  }
-
-  const Err = ({ id, msg }: { id: string; msg?: string | undefined }) =>
-    msg ? <p id={id} className="mt-2 text-sm text-destructive">{msg}</p> : null;
-
-  return (
-    <form
-      noValidate
-      onSubmit={handleSubmit(async () => {
-        await new Promise((r) => setTimeout(r, 600));
-        setSent(true);
-        reset();
-      })}
-      className="grid gap-5 rounded-lg border border-border bg-surface p-6 md:grid-cols-2 md:p-10"
-    >
-      <div>
-        <label htmlFor="c-name" className="text-sm font-medium">{f.name}</label>
-        <input id="c-name" autoComplete="name" aria-invalid={!!errors.name} aria-describedby="c-name-e" className={cn(field, errors.name && "border-destructive")} {...register("name")} />
-        <Err id="c-name-e" msg={errors.name?.message} />
-      </div>
-      <div>
-        <label htmlFor="c-email" className="text-sm font-medium">{f.email}</label>
-        <input id="c-email" type="email" dir="ltr" autoComplete="email" aria-invalid={!!errors.email} aria-describedby="c-email-e" className={cn(field, errors.email && "border-destructive")} {...register("email")} />
-        <Err id="c-email-e" msg={errors.email?.message} />
-      </div>
-      <div className="md:col-span-2">
-        <label htmlFor="c-service" className="text-sm font-medium">{f.service}</label>
-        <select id="c-service" className={field} {...register("service")}>
-          {f.options.map((o) => <option key={o} value={o}>{o}</option>)}
-        </select>
-      </div>
-      <div className="md:col-span-2">
-        <label htmlFor="c-msg" className="text-sm font-medium">{f.message}</label>
-        <textarea id="c-msg" rows={5} aria-invalid={!!errors.message} aria-describedby="c-msg-e" className={cn(field, "resize-y", errors.message && "border-destructive")} {...register("message")} />
-        <Err id="c-msg-e" msg={errors.message?.message} />
-      </div>
-      <div className="md:col-span-2">
-        <button type="submit" disabled={isSubmitting} className="btn-brand disabled:opacity-60">{isSubmitting ? f.sending : f.submit}</button>
-      </div>
-    </form>
-  );
+  const { content: t } = useLang(); const f = t.contact.form;
+  const [saved, setSaved] = useState(false);
+  const schema = useMemo(() => z.object({ name: z.string().trim().min(2, f.errors.name).max(100), email: z.string().trim().email(f.errors.email), service: z.string(), message: z.string().trim().min(10, f.errors.message).max(2000) }), [f]);
+  type Values = z.infer<typeof schema>;
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<Values>({ resolver: zodResolver(schema), defaultValues: { name: "", email: "", service: "", message: "" } });
+  if (saved) return <div role="status" className="border-y border-border py-12"><p className="text-lead">{f.success}</p><Button variant="editorialLink" onClick={() => setSaved(false)} className="mt-6">{f.again}<ArrowUpRight /></Button></div>;
+  return <form noValidate onSubmit={handleSubmit(v => { const blob = new Blob([`${f.name}: ${v.name}\n${f.email}: ${v.email}\n${f.service}: ${v.service}\n\n${v.message}`], { type: "text/plain;charset=utf-8" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "enquiry-draft.txt"; a.click(); window.setTimeout(() => URL.revokeObjectURL(url), 1000); setSaved(true); reset(); })} className="grid gap-8 sm:grid-cols-2">
+    {(["name", "email"] as const).map(key => <div key={key}><label htmlFor={`c-${key}`} className="text-xs">{f[key]}</label><input id={`c-${key}`} type={key === "email" ? "email" : "text"} autoComplete={key} aria-invalid={Boolean(errors[key])} aria-describedby={errors[key] ? `c-${key}-error` : undefined} className="contact-field" {...register(key)} />{errors[key] && <p id={`c-${key}-error`} className="mt-2 text-xs text-destructive">{errors[key]?.message}</p>}</div>)}
+    <div className="sm:col-span-2"><label htmlFor="c-service" className="text-xs">{f.service}</label><select id="c-service" className="contact-field" {...register("service")}>{f.options.map((o,i) => <option value={i === 0 ? "" : o} key={i}>{o}</option>)}</select></div>
+    <div className="sm:col-span-2"><label htmlFor="c-message" className="text-xs">{f.message}</label><textarea id="c-message" rows={4} className="contact-field resize-y" aria-invalid={Boolean(errors.message)} aria-describedby={errors.message ? "c-message-error" : undefined} {...register("message")} />{errors.message && <p id="c-message-error" className="mt-2 text-xs text-destructive">{errors.message.message}</p>}</div>
+    <div className="sm:col-span-2"><p className="mb-6 max-w-lg text-xs leading-relaxed text-muted-foreground">{f.notice}</p><Button type="submit" variant="editorial">{f.submit}<Download /></Button></div>
+  </form>;
 }
