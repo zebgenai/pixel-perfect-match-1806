@@ -51,7 +51,7 @@ export function ContactForm() {
     );
   }
 
-  const Err = ({ id, msg }: { id: string; msg?: string }) =>
+  const Err = ({ id, msg }: { id: string; msg?: string | undefined }) =>
     msg ? <p id={id} className="mt-2 text-small text-error">{msg}</p> : null;
 
   return (
