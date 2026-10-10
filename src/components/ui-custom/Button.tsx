@@ -69,7 +69,7 @@ interface TextLinkProps {
 }
 
 export function TextLink({ to, tone = "light", demo, disabled, children, className }: TextLinkProps) {
-  const cls = cn("text-link text-button", tone === "dark" ? "text-on-dark" : "text-foreground", className);
+  const cls = cn("link-arrow text-button", tone === "dark" ? "text-on-dark" : "text-foreground", className);
   const inner = (
     <>
       <span className="link-draw pb-1">{children}</span>

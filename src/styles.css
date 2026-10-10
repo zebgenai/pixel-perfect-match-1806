@@ -285,7 +285,7 @@
   &:hover, &[data-demo="hover"] { background: var(--color-sand); }
   &:active, &[data-demo="active"] { background: var(--color-line); }
 }
-@utility text-link {
+@utility link-arrow {
   display: inline-flex; align-items: center; gap: 12px; min-height: 44px;
   &:hover .link-draw, &:focus-visible .link-draw, &[data-demo="hover"] .link-draw { background-size: 100% 1px; }
   &:hover .arrow-nudge, &:focus-visible .arrow-nudge, &[data-demo="hover"] .arrow-nudge { translate: 4px 0; }
