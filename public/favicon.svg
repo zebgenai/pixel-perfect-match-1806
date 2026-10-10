@@ -1,7 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Brand mark">
-  <rect width="64" height="64" rx="14" fill="#131313"/>
-  <g transform="translate(8 8) scale(1.5)">
-    <path d="M2 6h6l8 14 8-14h6L16 30z" fill="#eb1f2f"/>
-    <path d="M10 6h4l2 4 2-4h4l-6 10z" fill="#eb1f2f" opacity=".6"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Brand mark">
+  <rect width="32" height="32" rx="7" fill="#131313"/>
+  <path d="M4 4h6l6 14 6-14h6L16 28z" fill="#eb1f2f"/>
+  <path d="M11 4h3l2 4 2-4h3L16 15z" fill="#eb1f2f"/>
 </svg>
