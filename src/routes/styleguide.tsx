@@ -5,6 +5,7 @@ import { Container, Eyebrow, Section } from "@/components/site/Layout";
 import { ImagePlaceholder, type Ratio } from "@/components/site/ImagePlaceholder";
 import { Placeholder } from "@/components/site/Placeholder";
 import { ClipReveal, MaskLine, Reveal } from "@/components/site/motion";
+import { ComponentShowcase } from "@/components/styleguide/ComponentShowcase";
 
 export const Route = createFileRoute("/styleguide")({
   head: () => ({
@@ -105,6 +106,10 @@ function Styleguide() {
           ))}
         </div>
       </Section>
+
+      <Container className="pb-32">
+        <ComponentShowcase />
+      </Container>
     </>
   );
 }

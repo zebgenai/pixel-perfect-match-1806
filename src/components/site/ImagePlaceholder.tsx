@@ -5,11 +5,11 @@ export type Ratio = "4:5" | "3:2" | "16:9" | "1:1";
 
 interface ImagePlaceholderProps {
   ratio: Ratio;
-  caption?: string;
+  caption?: string | undefined;
   /** Numbered figure label, e.g. "01". */
-  number?: string;
-  tone?: "sand" | "ink";
-  className?: string;
+  number?: string | undefined;
+  tone?: "sand" | "ink" | undefined;
+  className?: string | undefined;
 }
 
 export function ImagePlaceholder({ ratio, caption, number, tone = "sand", className }: ImagePlaceholderProps) {

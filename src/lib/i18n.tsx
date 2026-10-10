@@ -64,3 +64,16 @@ export function useLang() {
   if (!ctx) throw new Error("useLang must be used within LanguageProvider");
   return ctx;
 }
+
+/** Locks a subtree to one language without touching <html>. Used by the styleguide to show LTR and RTL side by side. */
+export function LangScope({ lang, children }: { lang: Lang; children: ReactNode }) {
+  const value = useMemo<LangValue>(() => {
+    const content = lang === "ar" ? ar : en;
+    return { lang, dir: lang === "ar" ? "rtl" : "ltr", content, t: (key) => lookup(content, key), setLang: () => {}, toggle: () => {} };
+  }, [lang]);
+  return (
+    <LangContext.Provider value={value}>
+      <div dir={value.dir} lang={lang}>{children}</div>
+    </LangContext.Provider>
+  );
+}
