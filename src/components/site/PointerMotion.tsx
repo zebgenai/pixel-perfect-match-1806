@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
-import { useRef, type ReactNode, type PointerEvent } from "react";
+import { useEffect, useRef, type ReactNode, type PointerEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight } from "lucide-react";
 
@@ -8,10 +8,12 @@ export function PointerMotion({
   children,
   className = "",
   strength = 7,
+  trackParent = false,
 }: {
   children: ReactNode;
   className?: string;
   strength?: number;
+  trackParent?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const bounds = useRef<DOMRect | null>(null);
@@ -20,6 +22,28 @@ export function PointerMotion({
     my = useMotionValue(0);
   const x = useSpring(mx, { stiffness: 95, damping: 24 }),
     y = useSpring(my, { stiffness: 95, damping: 24 });
+  useEffect(() => {
+    if (!trackParent || reduced) return;
+    const area = ref.current?.parentElement;
+    if (!area) return;
+    const enter = () => { bounds.current = area.getBoundingClientRect(); };
+    const move = (event: globalThis.PointerEvent) => {
+      if (event.pointerType !== "mouse" || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+      const r = bounds.current;
+      if (!r) return;
+      mx.set(((event.clientX - r.left) / r.width - 0.5) * strength * 2);
+      my.set(((event.clientY - r.top) / r.height - 0.5) * strength * 2);
+    };
+    const leave = () => { mx.set(0); my.set(0); };
+    area.addEventListener("pointerenter", enter, { passive: true });
+    area.addEventListener("pointermove", move, { passive: true });
+    area.addEventListener("pointerleave", leave, { passive: true });
+    return () => {
+      area.removeEventListener("pointerenter", enter);
+      area.removeEventListener("pointermove", move);
+      area.removeEventListener("pointerleave", leave);
+    };
+  }, [trackParent, reduced, strength, mx, my]);
   function move(e: PointerEvent<HTMLDivElement>) {
     if (
       reduced ||
