@@ -1,20 +1,8 @@
-<!-- LOVABLE:BEGIN -->
-> [!IMPORTANT]
-> This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
-> published git history — force pushing, or rebasing/amending/squashing commits
-> that are already pushed — as it rewrites history on Lovable's side and the
-> user will likely lose their project history.
->
-> Commits you push to the connected branch sync back to Lovable and show up in
-> the editor, so keep the branch in a working state.
-<!-- LOVABLE:END -->
-
 # Project rules
 
-- All site copy lives in `src/content/placeholders.ts` (EN) and `placeholders.ar.ts` (AR, typed to the EN shape); components read via `useLang()` (`content` object or `t("dotted.key")`). Why: bilingual by construction, no hardcoded strings.
-- Language state is a client context that sets `<html lang dir>`; layouts use Tailwind logical properties only. Why: RTL mirroring without per-component forks.
-- Animations go through `src/components/site/motion.tsx` (`Reveal`, `useMotionPreset`). Why: one place enforces reduced-motion fallbacks and timing tokens.
-- Type scale, grid, spacing and editorial utilities are `@utility` rules in `src/styles.css`. Why: single design source.
-- Layout primitives (`Container`, `Section`, `Eyebrow`) live in `src/components/site/Layout.tsx`; `/styleguide` is an unlinked, noindex reference of all tokens. Why: pages compose from one kit.
-- Reusable UI components live in `src/components/ui-custom` (exported via its index); forced visual states for documentation use a `demo` prop mapped to `data-demo` selectors in the `@utility` rules. Why: states stay previewable without duplicating styles.
-- `cn()` registers the custom type-scale names with tailwind-merge. Why: otherwise `text-h3` etc. are stripped as conflicting text colours.
+- Single-page site: all sections live on `/` (src/routes/index.tsx) with in-page anchors (#top, #services, #about, #contact). Why: user wanted a one-page agency layout.
+- All copy lives in `src/content/placeholders.ts` (EN) and `placeholders.ar.ts` (AR, typed to the EN shape); components read via `useLang()`. Why: bilingual by construction.
+- Language context sets `<html lang dir>`; layouts use logical properties so RTL mirrors. Why: Arabic support without forks.
+- Design tokens, type utilities, buttons and animations are defined in `src/styles.css`. Why: single design source.
+- Brand components (Header, Footer, ContactForm) live in `src/components/brand`. Why: one place for site chrome.
+- `cn()` registers custom text-size utilities with tailwind-merge. Why: otherwise they are stripped as text colours.

@@ -1,18 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { animate, motion, useInView, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import heroImg from "@/assets/hero.jpg";
+import studioImg from "@/assets/studio.jpg";
 import { en } from "@/content/placeholders";
 import { useLang } from "@/lib/i18n";
-import { ImagePlaceholder } from "@/components/site/ImagePlaceholder";
 import { Placeholder } from "@/components/site/Placeholder";
-import { Arrow, ArrowLink, ButtonLink, SectionLabel } from "@/components/site/Primitives";
-import { Reveal } from "@/components/site/motion";
+import { Reveal, useMotionPreset } from "@/components/site/motion";
+import { ContactForm } from "@/components/brand/ContactForm";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: en.meta.homeTitle },
-      { name: "description", content: en.meta.homeDescription },
-      { property: "og:title", content: en.meta.homeTitle },
-      { property: "og:description", content: en.meta.homeDescription },
+      { title: en.meta.title },
+      { name: "description", content: en.meta.description },
+      { property: "og:title", content: en.meta.title },
+      { property: "og:description", content: en.meta.description },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -20,161 +23,214 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-function Home() {
+function Kicker({ children }: { children: string }) {
+  return <p className="text-kicker text-brand">{children}</p>;
+}
+
+function Counter({ to, suffix }: { to: number; suffix: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.6 });
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!inView || to === 0) return;
+    const c = animate(0, to, { duration: 2, ease: "easeOut", onUpdate: (v) => setN(Math.round(v)) });
+    return () => c.stop();
+  }, [inView, to]);
+  return <span ref={ref} dir="ltr">{to === 0 ? "00" : n}{suffix}</span>;
+}
+
+function Hero() {
   const { content: t } = useLang();
-  const h = t.home;
+  const { reduced } = useMotionPreset();
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", reduced ? "0%" : "25%"]);
+  const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const rise = (d: number) => ({
+    initial: { opacity: 0, y: reduced ? 0 : 40 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.9, delay: d, ease: [0.22, 1, 0.36, 1] as const },
+  });
   return (
-    <>
-      {/* 01 Hero */}
-      <section className="container-site pt-16 md:pt-24 lg:pt-28">
-        <div className="grid-site gap-y-10">
-          <Reveal className="col-span-full lg:col-span-10">
-            <SectionLabel index="01" label={h.eyebrow} />
-            <Placeholder as="h1" className="mt-10 text-display text-foreground">{h.headline}</Placeholder>
-          </Reveal>
-          <Reveal index={1} className="col-span-full md:col-span-5 md:col-start-4 lg:col-span-5 lg:col-start-7">
-            <Placeholder as="p" className="text-body-lg measure">{h.intro}</Placeholder>
-            <div className="mt-8 flex flex-wrap items-center gap-8">
-              <ButtonLink to="/contact">{t.ui.enquire}</ButtonLink>
-              <ArrowLink to="/services">{t.nav.services}</ArrowLink>
+    <section id="top" ref={ref} className="relative flex min-h-[100svh] items-end overflow-hidden">
+      <motion.div style={{ y }} className="absolute inset-0">
+        <img src={heroImg} alt="" width={1920} height={1088} className="hero-zoom size-full object-cover" />
+      </motion.div>
+      <div aria-hidden className="hero-scrim absolute inset-0" />
+      <div aria-hidden className="corner-glow absolute inset-0 opacity-70" />
+      <motion.div style={{ opacity: fade }} className="container-site relative pb-20 pt-40 md:pb-28">
+        <motion.p {...rise(0.1)} className="text-kicker">{t.hero.kicker}</motion.p>
+        <h1 className="mt-6 text-mega">
+          <motion.span {...rise(0.25)} className="block">{t.hero.line1}</motion.span>
+          <motion.span {...rise(0.4)} className="block text-brand"><Placeholder>{t.hero.line2}</Placeholder></motion.span>
+        </h1>
+        <motion.p {...rise(0.55)} className="mt-6 max-w-2xl text-2xl font-bold md:text-3xl">{t.hero.sub}</motion.p>
+        <motion.p {...rise(0.65)} className="mt-4 max-w-xl text-lead text-muted-foreground">{t.hero.body}</motion.p>
+        <motion.div {...rise(0.8)} className="mt-10 flex flex-wrap gap-4">
+          <a href="#services" className="btn-brand">{t.hero.primary}</a>
+          <a href="#contact" className="btn-ghost">{t.hero.secondary}</a>
+        </motion.div>
+      </motion.div>
+    </section>
+  );
+}
+
+function Intro() {
+  const { content: t } = useLang();
+  return (
+    <section id="about" className="relative overflow-hidden section-pad">
+      <div aria-hidden className="corner-glow pointer-events-none absolute inset-0 opacity-50" />
+      <div className="container-site relative grid items-center gap-14 lg:grid-cols-2">
+        <Reveal>
+          <Kicker>{t.intro.kicker}</Kicker>
+          <h2 className="mt-4 text-title">{t.intro.title}</h2>
+          <p className="mt-6 max-w-xl text-lead text-muted-foreground">{t.intro.body}</p>
+          <a href="#contact" className="btn-brand mt-8">{t.intro.link}</a>
+        </Reveal>
+        <Reveal index={1}>
+          <div className="overflow-hidden rounded-xl">
+            <img src={studioImg} alt="" loading="lazy" width={1280} height={960} className="aspect-[4/3] w-full object-cover transition-transform duration-700 hover:scale-105" />
+          </div>
+        </Reveal>
+      </div>
+      <div className="container-site relative mt-20 grid gap-6 md:grid-cols-3">
+        {t.intro.stats.map((s, i) => (
+          <Reveal key={s.label} index={i}>
+            <div className="rounded-lg border border-border bg-surface p-8 text-center transition-colors hover:border-brand">
+              <p className="text-6xl font-extrabold text-brand md:text-7xl"><Counter to={s.value} suffix={s.suffix} /></p>
+              <p className="mt-3 text-lg font-bold uppercase rtl:normal-case">{s.label}</p>
+              {s.value === 0 && <Placeholder as="p" className="mt-1 text-sm">{s.note}</Placeholder>}
             </div>
           </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Services() {
+  const { content: t } = useLang();
+  const list = [...t.services.marquee, ...t.services.marquee];
+  return (
+    <section id="services" className="bg-surface section-pad">
+      <div className="container-site text-center">
+        <Reveal>
+          <Kicker>{t.services.kicker}</Kicker>
+          <h2 className="mt-4 text-title">{t.services.title}</h2>
+        </Reveal>
+      </div>
+      <div className="container-site mt-16 space-y-16">
+        {t.services.groups.map((g) => (
+          <div key={g.name}>
+            <h3 className="mb-6 text-xl font-bold uppercase text-muted-foreground rtl:normal-case">{g.name}</h3>
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+              {g.items.map((s, i) => (
+                <Reveal key={s.title} index={i}>
+                  <article className="group relative h-full overflow-hidden rounded-lg border border-border bg-background p-8 transition-all duration-300 hover:-translate-y-2 hover:border-brand hover:shadow-[var(--shadow-brand)]">
+                    <span dir="ltr" className="text-sm font-bold text-brand">0{i + 1}</span>
+                    <h4 className="mt-6 text-2xl font-extrabold">{s.title}</h4>
+                    <p className="mt-3 text-muted-foreground">{s.body}</p>
+                    <span aria-hidden className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-brand transition-transform duration-500 group-hover:scale-x-100 rtl:origin-right" />
+                  </article>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-20 overflow-hidden border-y border-border py-6" aria-hidden>
+        <div className="marquee-track gap-12">
+          {list.map((w, i) => (
+            <span key={i} className="flex items-center gap-12 whitespace-nowrap text-3xl font-extrabold uppercase text-foreground/80 md:text-5xl">
+              {w}<span className="text-brand">✦</span>
+            </span>
+          ))}
         </div>
-        <ImagePlaceholder ratio="16:9" caption={h.heroImage} className="mt-16 md:mt-24" />
-        <dl className="grid grid-cols-1 border-b border-line md:grid-cols-3">
-          {h.facts.map((f, i) => (
-            <Reveal key={i} index={i} className="border-line py-8 md:border-e md:px-8 md:first:ps-0 md:last:border-e-0">
-              <dt className="sr-only">{f.label}</dt>
-              <dd>
-                <Placeholder as="span" className="block text-h2">{f.value}</Placeholder>
-                <Placeholder as="span" className="mt-2 block text-small text-muted-foreground">{f.label}</Placeholder>
-              </dd>
+      </div>
+      <div className="container-site mt-14 text-center">
+        <a href="#contact" className="btn-brand">{t.services.more}</a>
+      </div>
+    </section>
+  );
+}
+
+function Benefits() {
+  const { content: t } = useLang();
+  return (
+    <section className="section-pad">
+      <div className="container-site">
+        <Reveal className="text-center">
+          <Kicker>{t.benefits.kicker}</Kicker>
+          <h2 className="mt-4 text-title">{t.benefits.title}</h2>
+        </Reveal>
+        <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {t.benefits.items.map((b, i) => (
+            <Reveal key={b.title} index={i}>
+              <div className="h-full rounded-lg bg-surface p-8 transition-colors hover:bg-brand">
+                <span className="grid size-14 place-items-center rounded-full border border-brand text-xl font-extrabold text-brand" dir="ltr">{i + 1}</span>
+                <h3 className="mt-6 text-xl font-extrabold">{b.title}</h3>
+                <p className="mt-3 text-muted-foreground">{b.body}</p>
+              </div>
             </Reveal>
           ))}
-        </dl>
-      </section>
-
-      {/* 02 Capabilities */}
-      <section className="container-site section-pad">
-        <div className="grid-site heading-gap gap-y-6">
-          <div className="col-span-full lg:col-span-4"><SectionLabel index={h.capabilitiesIndex} label={h.capabilitiesLabel} /></div>
-          <Placeholder as="h2" className="col-span-full text-h2 lg:col-span-7 lg:col-start-6">{h.capabilitiesHeading}</Placeholder>
         </div>
-        <ol className="border-t border-line">
-          {t.services.map((s, i) => (
-            <li key={s.number} className="border-b border-line">
-              <Reveal index={i % 4}>
-                <div className="grid-site items-baseline gap-y-2 py-8">
-                  <span dir="ltr" className="col-span-1 text-eyebrow text-muted-foreground">{s.number}</span>
-                  <h3 className="col-span-3 text-h3 md:col-span-3 lg:col-span-4">{s.title}</h3>
-                  <Placeholder as="p" className="col-span-full text-body text-muted-foreground md:col-span-4 lg:col-span-5 lg:col-start-7">{s.summary}</Placeholder>
-                </div>
-              </Reveal>
-            </li>
-          ))}
-        </ol>
-        <div className="mt-10"><ArrowLink to="/services">{t.ui.viewAll}</ArrowLink></div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* 03 Projects — sand */}
-      <section className="bg-sand section-pad">
-        <div className="container-site">
-          <div className="grid-site heading-gap gap-y-6">
-            <div className="col-span-full lg:col-span-4"><SectionLabel index={h.projectsIndex} label={h.projectsLabel} /></div>
-            <Placeholder as="h2" className="col-span-full text-h2 lg:col-span-7 lg:col-start-6">{h.projectsHeading}</Placeholder>
-          </div>
-          <div className="grid-site gap-y-16">
-            {h.projects.map((p, i) => (
-              <Reveal
-                key={p.number}
-                index={i}
-                className={
-                  i === 0
-                    ? "col-span-full lg:col-span-7"
-                    : i === 1
-                      ? "col-span-full md:col-span-4 lg:col-span-4 lg:col-start-9 lg:mt-48"
-                      : "col-span-full md:col-span-4 md:col-start-5 lg:col-span-5 lg:col-start-3"
-                }
-              >
-                <article>
-                  <ImagePlaceholder ratio={i === 0 ? "3:2" : "4:5"} caption={p.caption} tone={i === 2 ? "ink" : "sand"} className={i !== 2 ? "outline outline-1 outline-line" : ""} />
-                  <div className="mt-6 flex items-baseline justify-between gap-6 border-b border-line pb-4">
-                    <h3 className="text-h3">{p.title}</h3>
-                    <span dir="ltr" className="text-eyebrow text-muted-sand">{p.number}</span>
-                  </div>
-                  <Placeholder as="p" className="mt-3 text-small text-muted-sand">{p.meta}</Placeholder>
-                </article>
-              </Reveal>
+function Visit() {
+  const { content: t } = useLang();
+  return (
+    <section className="relative overflow-hidden">
+      <img src={heroImg} alt="" loading="lazy" width={1920} height={1088} className="absolute inset-0 size-full object-cover opacity-40" />
+      <div aria-hidden className="hero-scrim absolute inset-0 rotate-180" />
+      <div className="container-site relative section-pad text-center">
+        <Reveal>
+          <Kicker>{t.visit.kicker}</Kicker>
+          <h2 className="mx-auto mt-4 max-w-4xl text-title">{t.visit.title}</h2>
+          <p className="mx-auto mt-6 max-w-2xl text-lead text-muted-foreground">{t.visit.body}</p>
+          <Placeholder as="p" className="mt-6 text-sm font-bold uppercase tracking-widest">{t.visit.hours}</Placeholder>
+          <a href="#contact" className="btn-brand mt-8">{t.visit.button}</a>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function Contact() {
+  const { content: t } = useLang();
+  const c = t.contact;
+  return (
+    <section id="contact" className="section-pad">
+      <div className="container-site grid gap-12 lg:grid-cols-[1fr_1.4fr]">
+        <Reveal>
+          <Kicker>{c.kicker}</Kicker>
+          <h2 className="mt-4 text-title">{c.title}</h2>
+          <dl className="mt-10 space-y-6">
+            {[[c.phoneLabel, c.phone], [c.emailLabel, c.email], [c.addressLabel, c.address]].map(([l, v]) => (
+              <div key={l} className="border-s-2 border-brand ps-4">
+                <dt className="text-sm text-muted-foreground">{l}</dt>
+                <Placeholder as="dd" className="mt-1 text-lg font-bold">{v}</Placeholder>
+              </div>
             ))}
-          </div>
-        </div>
-      </section>
+          </dl>
+        </Reveal>
+        <Reveal index={1}><ContactForm /></Reveal>
+      </div>
+    </section>
+  );
+}
 
-      {/* 04 Industries */}
-      <section className="container-site section-pad">
-        <div className="grid-site gap-y-10">
-          <div className="col-span-full lg:col-span-4"><SectionLabel index={h.industriesIndex} label={h.industriesLabel} /></div>
-          <ul className="col-span-full lg:col-span-8 lg:col-start-5">
-            {h.industries.map((name, i) => (
-              <li key={name} className="flex items-baseline justify-between gap-6 border-t border-line py-6 last:border-b">
-                <span className="text-h2">{name}</span>
-                <span dir="ltr" className="text-eyebrow text-muted-foreground">0{i + 1}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* 05 Quote — dark */}
-      <section className="bg-ink section-pad text-on-dark">
-        <div className="container-site grid-site gap-y-10">
-          <div className="col-span-full lg:col-span-3"><SectionLabel index={h.quoteIndex} label={h.quoteLabel} tone="dark" /></div>
-          <figure className="col-span-full lg:col-span-8 lg:col-start-5">
-            <Reveal>
-              <blockquote>
-                <Placeholder as="p" className="text-h2 [&_.placeholder-text]:text-on-dark/80">{`“${h.quote}”`}</Placeholder>
-              </blockquote>
-              <figcaption className="mt-10 flex items-center gap-4 border-t border-line-dark pt-6 text-small">
-                <Placeholder className="[&_.placeholder-text]:text-on-dark">{h.quoteName}</Placeholder>
-                <span aria-hidden className="text-teal-on-dark">/</span>
-                <Placeholder className="[&_.placeholder-text]:text-on-dark/70">{h.quoteRole}</Placeholder>
-              </figcaption>
-            </Reveal>
-          </figure>
-        </div>
-      </section>
-
-      {/* 06 Insights */}
-      <section className="container-site section-pad">
-        <div className="grid-site heading-gap gap-y-6">
-          <div className="col-span-full lg:col-span-4"><SectionLabel index={h.insightsIndex} label={h.insightsLabel} /></div>
-          <Placeholder as="h2" className="col-span-full text-h2 lg:col-span-7 lg:col-start-6">{h.insightsHeading}</Placeholder>
-        </div>
-        <div className="grid gap-12 md:grid-cols-3 md:gap-6">
-          {h.articles.map((a, i) => (
-            <Reveal key={a.number} index={i}>
-              <article className="group border-t border-foreground pt-6">
-                <Placeholder as="p" className="text-eyebrow">{a.meta}</Placeholder>
-                <h3 className="mt-6 text-h3">{a.title}</h3>
-                <p className="mt-8 inline-flex items-center gap-3 text-button text-muted-foreground">
-                  {t.ui.readMore}
-                  <Arrow />
-                </p>
-              </article>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA — sand */}
-      <section className="bg-sand section-pad">
-        <div className="container-site grid-site gap-y-10">
-          <Placeholder as="h2" className="col-span-full text-h1 lg:col-span-8">{h.ctaHeading}</Placeholder>
-          <div className="col-span-full self-end lg:col-span-3 lg:col-start-10">
-            <ButtonLink to="/contact">{t.ui.enquire}</ButtonLink>
-          </div>
-        </div>
-      </section>
+function Home() {
+  return (
+    <>
+      <Hero />
+      <Intro />
+      <Services />
+      <Benefits />
+      <Visit />
+      <Contact />
     </>
   );
 }
