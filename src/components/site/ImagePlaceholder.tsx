@@ -27,7 +27,7 @@ export function ImagePlaceholder({ ratio, caption, number, tone = "sand", classN
         >
           {number && (
             <span dir="ltr" className={cn("absolute top-4 start-4 text-eyebrow", meta)}>
-              Fig. {number}
+              {number}
             </span>
           )}
           <span className={cn("absolute bottom-4 start-4 end-4 flex flex-wrap gap-x-3 text-eyebrow", meta)}>
