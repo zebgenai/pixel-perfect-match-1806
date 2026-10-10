@@ -13,7 +13,7 @@ const items = [
 ] as const;
 
 export function Header() {
-  const { t, toggle, lang } = useLang();
+  const { content: t, toggle, lang } = useLang();
   const [open, setOpen] = useState(false);
   const { reduced } = useMotionPreset();
 

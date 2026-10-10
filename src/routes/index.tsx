@@ -40,7 +40,7 @@ function Home() {
             </div>
           </Reveal>
         </div>
-        <ImagePlaceholder ratio="16:7" caption={h.heroImage} className="mt-16 md:mt-24" />
+        <ImagePlaceholder ratio="16:9" caption={h.heroImage} className="mt-16 md:mt-24" />
         <dl className="grid grid-cols-1 border-b border-line md:grid-cols-3">
           {h.facts.map((f, i) => (
             <Reveal key={i} index={i} className="border-line py-8 md:border-e md:px-8 md:first:ps-0 md:last:border-e-0">
@@ -97,7 +97,7 @@ function Home() {
                 }
               >
                 <article>
-                  <ImagePlaceholder ratio={i === 0 ? "4:3" : "4:5"} caption={p.caption} tone={i === 2 ? "ink" : "sand"} className={i !== 2 ? "outline outline-1 outline-line" : ""} />
+                  <ImagePlaceholder ratio={i === 0 ? "3:2" : "4:5"} caption={p.caption} tone={i === 2 ? "ink" : "sand"} className={i !== 2 ? "outline outline-1 outline-line" : ""} />
                   <div className="mt-6 flex items-baseline justify-between gap-6 border-b border-line pb-4">
                     <h3 className="text-h3">{p.title}</h3>
                     <span dir="ltr" className="text-eyebrow text-muted-sand">{p.number}</span>
