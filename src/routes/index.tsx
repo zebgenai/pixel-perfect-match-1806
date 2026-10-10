@@ -8,6 +8,7 @@ import { useLang } from "@/lib/i18n";
 import { Placeholder } from "@/components/site/Placeholder";
 import { Reveal, useMotionPreset } from "@/components/site/motion";
 import { ContactForm } from "@/components/brand/ContactForm";
+import { CursorGlow } from "@/components/site/CursorGlow";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -59,6 +60,7 @@ function Hero() {
       <div aria-hidden className="hero-scrim absolute inset-0" />
       <div aria-hidden className="corner-glow absolute inset-0 opacity-70" />
       <motion.div style={{ opacity: fade }} className="container-site relative pb-20 pt-40 md:pb-28">
+        <CursorGlow className="max-w-4xl p-8 md:p-12">
         <motion.p {...rise(0.1)} className="text-kicker">{t.hero.kicker}</motion.p>
         <h1 className="mt-6 text-mega">
           <motion.span {...rise(0.25)} className="block">{t.hero.line1}</motion.span>
@@ -70,6 +72,7 @@ function Hero() {
           <a href="#services" className="btn-brand">{t.hero.primary}</a>
           <a href="#contact" className="btn-ghost">{t.hero.secondary}</a>
         </motion.div>
+        </CursorGlow>
       </motion.div>
     </section>
   );
@@ -126,12 +129,14 @@ function Services() {
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
               {g.items.map((s, i) => (
                 <Reveal key={s.title} index={i}>
-                  <article className="group relative h-full overflow-hidden rounded-lg border border-border bg-background p-8 transition-all duration-300 hover:-translate-y-2 hover:border-brand hover:shadow-[var(--shadow-brand)]">
-                    <span dir="ltr" className="text-sm font-bold text-brand">0{i + 1}</span>
-                    <h4 className="mt-6 text-2xl font-extrabold">{s.title}</h4>
-                    <p className="mt-3 text-muted-foreground">{s.body}</p>
-                    <span aria-hidden className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-brand transition-transform duration-500 group-hover:scale-x-100 rtl:origin-right" />
-                  </article>
+                  <CursorGlow className="h-full transition-all duration-300 hover:-translate-y-2 hover:border-brand hover:shadow-[var(--shadow-brand)]" blobClassName="opacity-0 group-hover/glow:opacity-90">
+                    <article className="group relative h-full p-8">
+                      <span dir="ltr" className="text-sm font-bold text-brand">0{i + 1}</span>
+                      <h4 className="mt-6 text-2xl font-extrabold">{s.title}</h4>
+                      <p className="mt-3 text-muted-foreground">{s.body}</p>
+                      <span aria-hidden className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-brand transition-transform duration-500 group-hover:scale-x-100 rtl:origin-right" />
+                    </article>
+                  </CursorGlow>
                 </Reveal>
               ))}
             </div>
@@ -166,11 +171,11 @@ function Benefits() {
         <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {t.benefits.items.map((b, i) => (
             <Reveal key={b.title} index={i}>
-              <div className="h-full rounded-lg bg-surface p-8 transition-colors hover:bg-brand">
+              <CursorGlow className="h-full p-8" blobClassName="opacity-0 group-hover/glow:opacity-90">
                 <span className="grid size-14 place-items-center rounded-full border border-brand text-xl font-extrabold text-brand" dir="ltr">{i + 1}</span>
                 <h3 className="mt-6 text-xl font-extrabold">{b.title}</h3>
                 <p className="mt-3 text-muted-foreground">{b.body}</p>
-              </div>
+              </CursorGlow>
             </Reveal>
           ))}
         </div>
