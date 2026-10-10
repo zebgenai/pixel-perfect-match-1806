@@ -13,7 +13,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LanguageProvider, useLang } from "@/lib/i18n";
-import { Footer, Header } from "@/components/ui-custom";
+import { Header } from "@/components/brand/Header";
+import { Footer } from "@/components/brand/Footer";
 
 function NotFoundComponent() {
   return (
@@ -88,7 +89,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Inter:wght@400;500&family=Newsreader:opsz,wght@6..72,400&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap",
       },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
@@ -132,7 +133,7 @@ function SiteChrome() {
     <>
       <a
         href="#main"
-        className="skip-link text-nav"
+        className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-brand focus:px-5 focus:py-3"
       >
         {t.ui.skip}
       </a>
