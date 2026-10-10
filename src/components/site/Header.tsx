@@ -5,8 +5,12 @@ import { useLang } from "@/lib/i18n";
 import { Placeholder } from "./Placeholder";
 import { useMotionPreset } from "./motion";
 
-const routes = ["/", "/about", "/services", "/contact"] as const;
-const keys = ["home", "about", "services", "contact"] as const;
+const items = [
+  { to: "/", key: "home" },
+  { to: "/about", key: "about" },
+  { to: "/services", key: "services" },
+  { to: "/contact", key: "contact" },
+] as const;
 
 export function Header() {
   const { t, toggle, lang } = useLang();
@@ -25,14 +29,14 @@ export function Header() {
         </Link>
 
         <nav aria-label={t.ui.mainNav} className="hidden items-center gap-10 md:flex">
-          {routes.slice(1).map((to, i) => (
+          {items.slice(1).map(({ to, key }) => (
             <Link
               key={to}
               to={to}
               className="link-draw text-nav py-2 text-foreground"
               activeProps={{ "aria-current": "page", className: "!bg-[length:100%_1px]" }}
             >
-              {t.nav[keys[i + 1]]}
+              {t.nav[key]}
             </Link>
           ))}
           <button
@@ -68,14 +72,14 @@ export function Header() {
             transition={{ duration: reduced ? 0.2 : 0.4 }}
           >
             <nav aria-label={t.ui.mainNav} className="container-site flex flex-col pt-8">
-              {routes.map((to, i) => (
+              {items.map(({ to, key }, i) => (
                 <Link
                   key={to}
                   to={to}
                   onClick={() => setOpen(false)}
                   className="flex min-h-16 items-center justify-between border-b border-line text-h3"
                 >
-                  <span>{t.nav[keys[i]]}</span>
+                  <span>{t.nav[key]}</span>
                   <span dir="ltr" className="text-eyebrow text-muted-foreground">0{i + 1}</span>
                 </Link>
               ))}
