@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const { t } = useLang();
+  const { content: t } = useLang();
   const h = t.home;
   return (
     <>

@@ -22,7 +22,7 @@ export const Route = createFileRoute("/services")({
 });
 
 function Services() {
-  const { t } = useLang();
+  const { content: t } = useLang();
   const s = t.servicesPage;
   return (
     <>

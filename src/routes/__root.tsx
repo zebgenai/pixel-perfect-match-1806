@@ -128,7 +128,7 @@ function RootComponent() {
 }
 
 function SiteChrome() {
-  const { t } = useLang();
+  const { content: t } = useLang();
   return (
     <>
       <a

@@ -122,43 +122,43 @@
   font-family: var(--font-display); font-weight: 400;
   font-size: 52px; line-height: 56px; letter-spacing: -0.02em;
   @media (min-width: 768px) { font-size: 72px; line-height: 78px; }
-  @media (min-width: 1200px) { font-size: 96px; line-height: 100px; }
+  @media (min-width: 1280px) { font-size: 96px; line-height: 100px; }
   &:where([dir="rtl"] *) { font-family: var(--font-arabic); font-weight: 500; letter-spacing: 0; font-size: 54px; line-height: 62px;
     @media (min-width: 768px) { font-size: 74px; line-height: 86px; }
-    @media (min-width: 1200px) { font-size: 98px; line-height: 110px; } }
+    @media (min-width: 1280px) { font-size: 98px; line-height: 110px; } }
 }
 @utility text-h1 {
   font-family: var(--font-display); font-weight: 400;
   font-size: 44px; line-height: 48px; letter-spacing: -0.015em;
   @media (min-width: 768px) { font-size: 56px; line-height: 62px; }
-  @media (min-width: 1200px) { font-size: 72px; line-height: 76px; }
+  @media (min-width: 1280px) { font-size: 72px; line-height: 76px; }
   &:where([dir="rtl"] *) { font-family: var(--font-arabic); font-weight: 500; letter-spacing: 0; font-size: 46px; line-height: 54px;
     @media (min-width: 768px) { font-size: 58px; line-height: 68px; }
-    @media (min-width: 1200px) { font-size: 74px; line-height: 84px; } }
+    @media (min-width: 1280px) { font-size: 74px; line-height: 84px; } }
 }
 @utility text-h2 {
   font-family: var(--font-display); font-weight: 400;
   font-size: 32px; line-height: 38px; letter-spacing: -0.01em;
   @media (min-width: 768px) { font-size: 40px; line-height: 46px; }
-  @media (min-width: 1200px) { font-size: 48px; line-height: 54px; }
+  @media (min-width: 1280px) { font-size: 48px; line-height: 54px; }
   &:where([dir="rtl"] *) { font-family: var(--font-arabic); font-weight: 500; letter-spacing: 0; font-size: 34px; line-height: 42px;
     @media (min-width: 768px) { font-size: 42px; line-height: 51px; }
-    @media (min-width: 1200px) { font-size: 50px; line-height: 60px; } }
+    @media (min-width: 1280px) { font-size: 50px; line-height: 60px; } }
 }
 @utility text-h3 {
   font-family: var(--font-display); font-weight: 400;
   font-size: 24px; line-height: 30px;
   @media (min-width: 768px) { font-size: 28px; line-height: 36px; }
-  @media (min-width: 1200px) { font-size: 32px; line-height: 40px; }
+  @media (min-width: 1280px) { font-size: 32px; line-height: 40px; }
   &:where([dir="rtl"] *) { font-family: var(--font-arabic); font-weight: 500; font-size: 26px; line-height: 34px;
-    @media (min-width: 1200px) { font-size: 34px; line-height: 44px; } }
+    @media (min-width: 1280px) { font-size: 34px; line-height: 44px; } }
 }
 @utility text-body-lg {
   font-size: 18px; line-height: 28px;
   @media (min-width: 768px) { font-size: 19px; line-height: 30px; }
-  @media (min-width: 1200px) { font-size: 20px; line-height: 32px; }
+  @media (min-width: 1280px) { font-size: 20px; line-height: 32px; }
   &:where([dir="rtl"] *) { font-size: 20px; line-height: 34px;
-    @media (min-width: 1200px) { font-size: 22px; line-height: 36px; } }
+    @media (min-width: 1280px) { font-size: 22px; line-height: 36px; } }
 }
 @utility text-body {
   font-size: 16px; line-height: 26px;
@@ -188,22 +188,22 @@
 @utility container-site {
   width: 100%; max-width: calc(1280px + 160px); margin-inline: auto; padding-inline: 20px;
   @media (min-width: 768px) { padding-inline: 40px; }
-  @media (min-width: 1200px) { padding-inline: 80px; }
+  @media (min-width: 1280px) { padding-inline: 80px; }
 }
 @utility grid-site {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 16px;
   @media (min-width: 768px) { grid-template-columns: repeat(8, minmax(0, 1fr)); column-gap: 24px; }
-  @media (min-width: 1200px) { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  @media (min-width: 1280px) { grid-template-columns: repeat(12, minmax(0, 1fr)); }
 }
 @utility section-pad {
   padding-block: 80px;
   @media (min-width: 768px) { padding-block: 112px; }
-  @media (min-width: 1200px) { padding-block: 144px; }
+  @media (min-width: 1280px) { padding-block: 144px; }
 }
 @utility heading-gap {
   margin-bottom: 40px;
   @media (min-width: 768px) { margin-bottom: 48px; }
-  @media (min-width: 1200px) { margin-bottom: 64px; }
+  @media (min-width: 1280px) { margin-bottom: 64px; }
 }
 
 /* Editorial details */

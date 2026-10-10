@@ -3,7 +3,7 @@ import { useLang } from "@/lib/i18n";
 import { Placeholder } from "./Placeholder";
 
 export function Footer() {
-  const { t } = useLang();
+  const { content: t } = useLang();
   const links = [
     { to: "/about" as const, label: t.nav.about },
     { to: "/services" as const, label: t.nav.services },
