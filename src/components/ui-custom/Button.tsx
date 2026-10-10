@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export type SiteRoute = "/" | "/about" | "/services" | "/contact";
-export type ButtonVariant = "primary" | "secondary" | "inverse";
+export type ButtonVariant = "primary" | "secondary" | "inverse" | "outline-dark";
 export type ButtonSize = "l" | "m" | "s";
 /** Forces a visual state for documentation only. */
 export type DemoState = "hover" | "active" | "focus";
@@ -12,6 +12,7 @@ const variantCls: Record<ButtonVariant, string> = {
   primary: "btn-primary",
   secondary: "btn-secondary",
   inverse: "btn-inverse",
+  "outline-dark": "btn-outline-dark",
 };
 const sizeCls: Record<ButtonSize, string> = { l: "min-h-14", m: "min-h-12", s: "min-h-11" };
 
