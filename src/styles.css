@@ -120,7 +120,8 @@
 }
 
 /* Decorations */
-@utility corner-glow { background-image: var(--gradient-corner); }
+@keyframes glow-pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.9; } }
+@utility corner-glow { background-image: var(--gradient-corner); animation: glow-pulse 6s ease-in-out infinite; }
 @utility corner-glow-bl { background-image: var(--gradient-corner-bl); }
 @utility hero-scrim { background-image: var(--gradient-scrim); }
 
@@ -131,6 +132,7 @@
   background: var(--color-brand); color: var(--color-primary-foreground); font-weight: 500;
   transition: background-color 250ms ease, transform 250ms ease, box-shadow 250ms ease;
   &:hover { background: var(--color-brand-hover); transform: translateY(-2px); box-shadow: var(--shadow-brand); }
+  &:active { transform: translateY(0) scale(0.97); }
 }
 @utility btn-ghost {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
