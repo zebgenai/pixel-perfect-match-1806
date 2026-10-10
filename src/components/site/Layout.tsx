@@ -38,8 +38,8 @@ export function Section({ children, tone = "ivory", id, className, ...rest }: Se
 interface EyebrowProps {
   number: string;
   label: string;
-  tone?: "light" | "dark";
-  className?: string;
+  tone?: "light" | "dark" | undefined;
+  className?: string | undefined;
 }
 
 /** Section numbering: "02 — Capabilities". */

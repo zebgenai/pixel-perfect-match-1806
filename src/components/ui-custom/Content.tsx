@@ -1,4 +1,5 @@
 import * as Accordion from "@radix-ui/react-accordion";
+import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -53,7 +54,6 @@ interface ServiceRowProps extends ServiceItem {
   demo?: "hover" | undefined;
 }
 export function ServiceRow({ number, title, summary, to = "/services", media, demo }: ServiceRowProps) {
-  const { Link } = useRouterLink();
   return (
     <Link to={to} data-demo={demo} className="group block border-b border-line">
       <div className="grid grid-cols-12 items-center gap-6 py-8 transition-[padding] duration-[400ms] ease-[var(--ease-standard)] group-hover:ps-3 group-focus-visible:ps-3 group-data-[demo=hover]:ps-3">
@@ -290,10 +290,4 @@ export function CtaBand({ heading, action, to = "/contact", tone = "sand" }: { h
       </div>
     </div>
   );
-}
-
-/* Router Link wrapper kept local so ServiceRow stays a single focusable link. */
-import { Link as RouterLink } from "@tanstack/react-router";
-function useRouterLink() {
-  return { Link: RouterLink };
 }
