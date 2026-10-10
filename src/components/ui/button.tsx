@@ -9,6 +9,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        editorial: "min-h-12 h-auto rounded-none bg-brand px-6 py-4 text-primary-foreground text-xs font-medium shadow-none hover:bg-brand-hover transition-colors [&_svg]:size-4",
+        editorialLink: "min-h-12 h-auto rounded-none bg-transparent px-0 py-3 text-foreground text-xs font-medium shadow-none hover:bg-transparent",
         default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
