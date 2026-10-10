@@ -13,8 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LanguageProvider, useLang } from "@/lib/i18n";
-import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
+import { Footer, Header } from "@/components/ui-custom";
 
 function NotFoundComponent() {
   return (
