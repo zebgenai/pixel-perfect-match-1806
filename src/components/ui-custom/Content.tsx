@@ -126,7 +126,7 @@ interface ProjectCardProps {
 export function ProjectCard({ size = "feature", number, name, category, location, outcome, caption, to, demo }: ProjectCardProps) {
   const { content: t } = useLang();
   return (
-    <article data-demo={demo} className="group">
+    <article data-demo={demo} className="group [&:hover_.link-draw]:bg-[length:100%_1px]">
       <div className="overflow-hidden">
         <div className="transition-transform duration-700 ease-[var(--ease-standard)] group-hover:scale-[1.03] group-data-[demo=hover]:scale-[1.03]">
           <ImagePlaceholder ratio={projectRatio[size]} caption={caption} number={number} />
@@ -225,7 +225,7 @@ export function FaqItem({ value, q, a }: { value: string; q: string; a: string }
   return (
     <Accordion.Item value={value} className="border-b border-line">
       <Accordion.Header>
-        <Accordion.Trigger className="group flex min-h-[88px] w-full items-center justify-between gap-6 px-4 py-6 text-start text-h3 transition-colors duration-200 hover:bg-sand focus-visible:bg-sand">
+        <Accordion.Trigger className="group flex min-h-[88px] w-full items-center justify-between gap-6 px-4 py-6 text-start text-h3 transition-colors duration-200 hover:bg-line/40 focus-visible:bg-line/40">
           <Placeholder>{q}</Placeholder>
           <PlusMinus />
         </Accordion.Trigger>
@@ -247,7 +247,8 @@ interface ArticleCardProps {
   caption?: string | undefined;
   demo?: "hover" | undefined;
 }
-export function ArticleCard({ variant = "feature", title, category, date, readingTime, caption, demo }: ArticleCardProps) {
+export function ArticleCard({ variant = "feature", title, category, date, readingTime, caption, demo, level = "h3" }: ArticleCardProps & { level?: "h2" | "h3" | undefined }) {
+  const H = level;
   const meta = (
     <p className="flex flex-wrap gap-x-2 text-eyebrow text-muted-foreground">
       <Placeholder>{category}</Placeholder>
@@ -258,9 +259,9 @@ export function ArticleCard({ variant = "feature", title, category, date, readin
     </p>
   );
   const heading = (
-    <h3 className={cn(variant === "feature" ? "text-h3" : "text-body-lg font-medium", "mt-4")}>
+    <H className={cn(variant === "feature" ? (level === "h2" ? "text-h2" : "text-h3") : "text-body-lg font-medium", "mt-4")}>
       <span className="link-draw pb-1 group-hover:bg-[length:100%_1px] group-data-[demo=hover]:bg-[length:100%_1px]">{title}</span>
-    </h3>
+    </H>
   );
   if (variant === "compact") {
     return (

@@ -10,20 +10,24 @@ interface ImagePlaceholderProps {
   number?: string | undefined;
   tone?: "sand" | "ink" | undefined;
   className?: string | undefined;
+  /** Skip the clip reveal (e.g. crossfading previews). */
+  reveal?: boolean | undefined;
+  /** Stretch to the parent height instead of using the ratio. */
+  fill?: boolean | undefined;
 }
 
-export function ImagePlaceholder({ ratio, caption, number, tone = "sand", className }: ImagePlaceholderProps) {
+export function ImagePlaceholder({ ratio, caption, number, tone = "sand", className, reveal = true, fill = false }: ImagePlaceholderProps) {
   const [w, h] = ratio.split(":");
   const label = caption ? `${ratio} — ${caption}` : ratio;
   const meta = tone === "sand" ? "text-muted-sand" : "text-on-dark/70";
   return (
     <figure className={cn("relative", className)}>
-      <ClipReveal>
+      {(() => { const body = (
         <div
           role="img"
           aria-label={label}
-          style={{ aspectRatio: `${w} / ${h}` }}
-          className={cn("relative w-full", tone === "sand" ? "bg-sand outline outline-1 -outline-offset-1 outline-line" : "bg-ink-raised")}
+          style={fill ? undefined : { aspectRatio: `${w} / ${h}` }}
+          className={cn("relative w-full", fill && "h-full", tone === "sand" ? "bg-sand outline outline-1 -outline-offset-1 outline-line" : "bg-ink-raised")}
         >
           {number && (
             <span dir="ltr" className={cn("absolute top-4 start-4 text-eyebrow", meta)}>
@@ -40,7 +44,7 @@ export function ImagePlaceholder({ ratio, caption, number, tone = "sand", classN
             )}
           </span>
         </div>
-      </ClipReveal>
+      ); return reveal ? <ClipReveal className={fill ? "h-full" : undefined}>{body}</ClipReveal> : body; })()}
     </figure>
   );
 }
