@@ -16,3 +16,5 @@
 - Animations go through `src/components/site/motion.tsx` (`Reveal`, `useMotionPreset`). Why: one place enforces reduced-motion fallbacks and timing tokens.
 - Type scale, grid, spacing and editorial utilities are `@utility` rules in `src/styles.css`. Why: single design source.
 - Layout primitives (`Container`, `Section`, `Eyebrow`) live in `src/components/site/Layout.tsx`; `/styleguide` is an unlinked, noindex reference of all tokens. Why: pages compose from one kit.
+- Reusable UI components live in `src/components/ui-custom` (exported via its index); forced visual states for documentation use a `demo` prop mapped to `data-demo` selectors in the `@utility` rules. Why: states stay previewable without duplicating styles.
+- `cn()` registers the custom type-scale names with tailwind-merge. Why: otherwise `text-h3` etc. are stripped as conflicting text colours.

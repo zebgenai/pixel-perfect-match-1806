@@ -153,17 +153,17 @@ export interface StatItem {
   value: string | null;
   caption: string;
 }
-export function Stat({ value, caption, tone = "light" }: StatItem & { tone?: Tone | undefined }) {
+export function Stat({ value, caption, tone = "light", compact = false }: StatItem & { tone?: Tone | undefined; compact?: boolean | undefined }) {
   const { content: t } = useLang();
   return (
     <div className={cn("border-t pt-6", tone === "dark" ? "border-on-dark/60" : "border-foreground")}>
       {value === null ? (
-        <p className="flex h-[48px] items-end md:h-[62px] lg:h-[76px]">
+        <p className={cn("flex items-end", compact ? "h-[38px] md:h-[46px] lg:h-[54px]" : "h-[48px] md:h-[62px] lg:h-[76px]")}>
           <span className={cn("w-24 border-b border-dashed", tone === "dark" ? "border-on-dark/40" : "border-muted-ivory")} />
           <span className="sr-only">{t.ui.pendingFact}</span>
         </p>
       ) : (
-        <Placeholder as="p" className="text-h1">{value}</Placeholder>
+        <Placeholder as="p" className={compact ? "text-h2" : "text-h1"}>{value}</Placeholder>
       )}
       <Placeholder as="p" className={cn("mt-3 text-small", tone === "dark" ? "text-on-dark/70" : "text-muted-foreground")}>{caption}</Placeholder>
     </div>
@@ -177,7 +177,7 @@ const statCols: Record<number, string> = {
 export function StatGroup({ items, tone = "light" }: { items: StatItem[]; tone?: Tone | undefined }) {
   return (
     <div className={cn("grid grid-cols-1 gap-x-6 gap-y-10", statCols[items.length] ?? "md:grid-cols-3")}>
-      {items.map((s, i) => <Stat key={i} {...s} tone={tone} />)}
+      {items.map((s, i) => <Stat key={i} {...s} tone={tone} compact={items.length > 3} />)}
     </div>
   );
 }
