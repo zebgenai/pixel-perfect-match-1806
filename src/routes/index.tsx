@@ -20,6 +20,7 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "preload", as: "image", href: heroImg, fetchPriority: "high" }],
   }),
   component: Home,
 });
@@ -55,12 +56,12 @@ function Hero() {
   return (
     <section id="top" ref={ref} className="relative flex min-h-[100svh] items-end overflow-hidden">
       <motion.div style={{ y }} className="absolute inset-0">
-        <img src={heroImg} alt="" width={1920} height={1088} className="hero-zoom size-full object-cover" />
+        <img src={heroImg} alt="" width={1920} height={1088} fetchPriority="high" decoding="async" className="hero-zoom size-full object-cover" />
       </motion.div>
       <div aria-hidden className="hero-scrim absolute inset-0" />
       <div aria-hidden className="corner-glow absolute inset-0 opacity-70" />
       <motion.div style={{ opacity: fade }} className="container-site relative pb-20 pt-40 md:pb-28">
-        <CursorGlow className="max-w-4xl p-8 md:p-12">
+        <CursorGlow className="max-w-4xl p-6 sm:p-8 md:p-12">
         <motion.p {...rise(0.1)} className="text-kicker">{t.hero.kicker}</motion.p>
         <h1 className="mt-6 text-mega">
           <motion.span {...rise(0.25)} className="block">{t.hero.line1}</motion.span>
