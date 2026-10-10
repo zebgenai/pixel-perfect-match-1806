@@ -20,7 +20,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 function Contact() {
-  const { t } = useLang();
+  const { content: t } = useLang();
   const c = t.contact;
   return (
     <>

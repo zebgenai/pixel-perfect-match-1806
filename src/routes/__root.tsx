@@ -128,12 +128,12 @@ function RootComponent() {
 }
 
 function SiteChrome() {
-  const { t } = useLang();
+  const { content: t } = useLang();
   return (
     <>
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:bg-ivory focus:px-4 focus:py-3 focus:text-nav"
+        className="skip-link text-nav"
       >
         {t.ui.skip}
       </a>

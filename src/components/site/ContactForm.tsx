@@ -11,7 +11,7 @@ const fieldBase =
   "mt-2 block w-full rounded-none border-0 border-b border-line bg-transparent px-0 py-3 text-body text-foreground placeholder:text-muted-foreground focus-visible:border-foreground focus-visible:outline-2 focus-visible:outline-offset-2 transition-colors";
 
 export function ContactForm() {
-  const { t } = useLang();
+  const { content: t } = useLang();
   const f = t.contact.form;
   const [sent, setSent] = useState(false);
 

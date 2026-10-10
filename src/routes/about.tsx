@@ -21,7 +21,7 @@ export const Route = createFileRoute("/about")({
 });
 
 function About() {
-  const { t } = useLang();
+  const { content: t } = useLang();
   const a = t.about;
   return (
     <>
