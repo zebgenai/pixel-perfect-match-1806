@@ -1,31 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
-import { ArrowUpRight, ArrowDown, X } from "lucide-react";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-import hero from "@/assets/editorial-hero-1280.webp";
-import heroSmall from "@/assets/editorial-hero-640.webp";
-import work from "@/assets/editorial-work-1280.webp";
-import workSmall from "@/assets/editorial-work-640.webp";
-import detail from "@/assets/editorial-detail-1280.webp";
-import detailSmall from "@/assets/editorial-detail-640.webp";
+import { animate, motion, useInView, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import heroImg from "@/assets/hero.jpg";
+import studioImg from "@/assets/studio.jpg";
 import { en } from "@/content/placeholders";
 import { useLang } from "@/lib/i18n";
-import { Reveal } from "@/components/site/motion";
-import { PointerMotion, ActionLink } from "@/components/site/PointerMotion";
-import { Button } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
+import { Placeholder } from "@/components/site/Placeholder";
+import { Reveal, useMotionPreset } from "@/components/site/motion";
 import { ContactForm } from "@/components/brand/ContactForm";
-const visuals = [
-  { src: work, small: workSmall, width: 1024, height: 1280 },
-  { src: detail, small: detailSmall, width: 1280, height: 960 },
-  { src: hero, small: heroSmall, width: 1280, height: 853 },
-];
+import { CursorGlow } from "@/components/site/CursorGlow";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -36,345 +20,223 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [
-      {
-        rel: "preload",
-        as: "image",
-        href: hero,
-        imageSrcSet: `${heroSmall} 640w, ${hero} 1280w`,
-        imageSizes: "100vw",
-        fetchPriority: "high",
-      },
-    ],
+    links: [{ rel: "preload", as: "image", href: heroImg, fetchPriority: "high" }],
   }),
   component: Home,
 });
-function SectionLabel({ n, children }: { n: string; children: string }) {
-  return (
-    <div className="section-label">
-      <span dir="ltr">{n}</span>
-      <span>{children}</span>
-    </div>
-  );
+
+function Kicker({ children }: { children: string }) {
+  return <p className="text-kicker text-brand">{children}</p>;
 }
+
+function Counter({ to, suffix }: { to: number; suffix: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.6 });
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!inView || to === 0) return;
+    const c = animate(0, to, { duration: 2, ease: "easeOut", onUpdate: (v) => setN(Math.round(v)) });
+    return () => c.stop();
+  }, [inView, to]);
+  return <span ref={ref} dir="ltr">{to === 0 ? "00" : n}{suffix}</span>;
+}
+
 function Hero() {
   const { content: t } = useLang();
+  const { reduced } = useMotionPreset();
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", reduced ? "0%" : "25%"]);
+  const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const rise = (d: number) => ({
+    initial: { opacity: 0, y: reduced ? 0 : 40 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.9, delay: d, ease: [0.22, 1, 0.36, 1] as const },
+  });
   return (
-    <section id="top" className="hero">
-      <PointerMotion strength={7} trackParent className="hero-media">
-        <img
-          src={hero}
-          srcSet={`${heroSmall} 640w, ${hero} 1280w`}
-          sizes="100vw"
-          width={1280}
-          height={853}
-          alt=""
-          fetchPriority="high"
-        />
-      </PointerMotion>
-      <div className="hero-overlay" aria-hidden />
-      <div className="container-site hero-content">
-        <p className="text-kicker text-muted-foreground">{t.hero.kicker}</p>
-        <h1 className="text-mega mt-6">{t.meta.brand}</h1>
-        <p className="hero-statement">{t.hero.statement}</p>
-        <p className="hero-body text-muted-foreground">{t.hero.body}</p>
-        <div className="hero-actions">
-          <ActionLink href="#contact">{t.ui.cta}</ActionLink>
-          <ActionLink href="#work" secondary>
-            {t.ui.explore}
-          </ActionLink>
-        </div>
+    <section id="top" ref={ref} className="relative flex min-h-[100svh] items-end overflow-hidden">
+      <motion.div style={{ y }} className="absolute inset-0">
+        <img src={heroImg} alt="" width={1920} height={1088} fetchPriority="high" decoding="async" className="hero-zoom size-full object-cover" />
+      </motion.div>
+      <div aria-hidden className="hero-scrim absolute inset-0" />
+      <div aria-hidden className="corner-glow absolute inset-0 opacity-70" />
+      <motion.div style={{ opacity: fade }} className="container-site relative pb-20 pt-40 md:pb-28">
+        <CursorGlow className="max-w-4xl p-6 sm:p-8 md:p-12">
+        <motion.p {...rise(0.1)} className="text-kicker">{t.hero.kicker}</motion.p>
+        <h1 className="mt-6 text-mega">
+          <motion.span {...rise(0.25)} className="block">{t.hero.line1}</motion.span>
+          <motion.span {...rise(0.4)} className="block text-brand"><Placeholder>{t.hero.line2}</Placeholder></motion.span>
+        </h1>
+        <motion.p {...rise(0.55)} className="mt-6 max-w-2xl text-2xl font-bold md:text-3xl">{t.hero.sub}</motion.p>
+        <motion.p {...rise(0.65)} className="mt-4 max-w-xl text-lead text-muted-foreground">{t.hero.body}</motion.p>
+        <motion.div {...rise(0.8)} className="mt-10 flex flex-wrap gap-4">
+          <a href="#services" className="btn-brand">{t.hero.primary}</a>
+          <a href="#contact" className="btn-ghost">{t.hero.secondary}</a>
+        </motion.div>
+        </CursorGlow>
+      </motion.div>
+    </section>
+  );
+}
+
+function Intro() {
+  const { content: t } = useLang();
+  return (
+    <section id="about" className="relative overflow-hidden section-pad">
+      <div aria-hidden className="corner-glow pointer-events-none absolute inset-0 opacity-50" />
+      <div className="container-site relative grid items-center gap-14 lg:grid-cols-2">
+        <Reveal>
+          <Kicker>{t.intro.kicker}</Kicker>
+          <h2 className="mt-4 text-title">{t.intro.title}</h2>
+          <p className="mt-6 max-w-xl text-lead text-muted-foreground">{t.intro.body}</p>
+          <a href="#contact" className="btn-brand mt-8">{t.intro.link}</a>
+        </Reveal>
+        <Reveal index={1}>
+          <div className="overflow-hidden rounded-xl">
+            <img src={studioImg} alt="" loading="lazy" width={1280} height={960} className="aspect-[4/3] w-full object-cover transition-transform duration-700 hover:scale-105" />
+          </div>
+        </Reveal>
       </div>
-      <span className="hero-caption">{t.ui.concept}</span>
-      <div className="hero-bottom">
-        <span>{t.hero.metadata}</span>
-        <a href="#about" className="flex items-center gap-3">
-          {t.hero.scroll}
-          <ArrowDown size={13} />
-        </a>
+      <div className="container-site relative mt-20 grid gap-6 md:grid-cols-3">
+        {t.intro.stats.map((s, i) => (
+          <Reveal key={s.label} index={i}>
+            <div className="rounded-lg border border-border bg-surface p-8 text-center transition-colors hover:border-brand">
+              <p className="text-6xl font-extrabold text-brand md:text-7xl"><Counter to={s.value} suffix={s.suffix} /></p>
+              <p className="mt-3 text-lg font-bold uppercase rtl:normal-case">{s.label}</p>
+              {s.value === 0 && <Placeholder as="p" className="mt-1 text-sm">{s.note}</Placeholder>}
+            </div>
+          </Reveal>
+        ))}
       </div>
     </section>
   );
 }
-function About() {
+
+function Services() {
   const { content: t } = useLang();
+  const list = [...t.services.marquee, ...t.services.marquee];
   return (
-    <section id="about" className="section-pad container-site">
-      <div className="editorial-grid">
-        <SectionLabel n="01">{t.about.kicker}</SectionLabel>
+    <section id="services" className="bg-surface section-pad">
+      <div className="container-site text-center">
         <Reveal>
-          <h2 className="text-title about-title">{t.about.title}</h2>
-          <div className="about-copy">
-            <p className="text-lead text-muted-foreground">{t.about.body}</p>
-            <div>
-              <p className="text-sm leading-loose text-muted-foreground">{t.about.detail}</p>
-              <p className="mt-8 text-xs text-brand">{t.about.label}</p>
+          <Kicker>{t.services.kicker}</Kicker>
+          <h2 className="mt-4 text-title">{t.services.title}</h2>
+        </Reveal>
+      </div>
+      <div className="container-site mt-16 space-y-16">
+        {t.services.groups.map((g) => (
+          <div key={g.name}>
+            <h3 className="mb-6 text-xl font-bold uppercase text-muted-foreground rtl:normal-case">{g.name}</h3>
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+              {g.items.map((s, i) => (
+                <Reveal key={s.title} index={i}>
+                  <CursorGlow className="h-full transition-all duration-300 hover:-translate-y-2 hover:border-brand hover:shadow-[var(--shadow-brand)]" blobClassName="opacity-0 group-hover/glow:opacity-90">
+                    <article className="group relative h-full p-8">
+                      <span dir="ltr" className="text-sm font-bold text-brand">0{i + 1}</span>
+                      <h4 className="mt-6 text-2xl font-extrabold">{s.title}</h4>
+                      <p className="mt-3 text-muted-foreground">{s.body}</p>
+                      <span aria-hidden className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-brand transition-transform duration-500 group-hover:scale-x-100 rtl:origin-right" />
+                    </article>
+                  </CursorGlow>
+                </Reveal>
+              ))}
             </div>
           </div>
+        ))}
+      </div>
+      <div className="mt-20 overflow-hidden border-y border-border py-6" aria-hidden>
+        <div className="marquee-track gap-12">
+          {list.map((w, i) => (
+            <span key={i} className="flex items-center gap-12 whitespace-nowrap text-3xl font-extrabold uppercase text-foreground/80 md:text-5xl">
+              {w}<span className="text-brand">✦</span>
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="container-site mt-14 text-center">
+        <a href="#contact" className="btn-brand">{t.services.more}</a>
+      </div>
+    </section>
+  );
+}
+
+function Benefits() {
+  const { content: t } = useLang();
+  return (
+    <section className="section-pad">
+      <div className="container-site">
+        <Reveal className="text-center">
+          <Kicker>{t.benefits.kicker}</Kicker>
+          <h2 className="mt-4 text-title">{t.benefits.title}</h2>
+        </Reveal>
+        <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {t.benefits.items.map((b, i) => (
+            <Reveal key={b.title} index={i}>
+              <CursorGlow className="h-full p-8" blobClassName="opacity-0 group-hover/glow:opacity-90">
+                <span className="grid size-14 place-items-center rounded-full border border-brand text-xl font-extrabold text-brand" dir="ltr">{i + 1}</span>
+                <h3 className="mt-6 text-xl font-extrabold">{b.title}</h3>
+                <p className="mt-3 text-muted-foreground">{b.body}</p>
+              </CursorGlow>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Visit() {
+  const { content: t } = useLang();
+  return (
+    <section className="relative overflow-hidden">
+      <img src={heroImg} alt="" loading="lazy" width={1920} height={1088} className="absolute inset-0 size-full object-cover opacity-40" />
+      <div aria-hidden className="hero-scrim absolute inset-0 rotate-180" />
+      <div className="container-site relative section-pad text-center">
+        <Reveal>
+          <Kicker>{t.visit.kicker}</Kicker>
+          <h2 className="mx-auto mt-4 max-w-4xl text-title">{t.visit.title}</h2>
+          <p className="mx-auto mt-6 max-w-2xl text-lead text-muted-foreground">{t.visit.body}</p>
+          <Placeholder as="p" className="mt-6 text-sm font-bold uppercase tracking-widest">{t.visit.hours}</Placeholder>
+          <a href="#contact" className="btn-brand mt-8">{t.visit.button}</a>
         </Reveal>
       </div>
     </section>
   );
 }
-function Services() {
-  const { content: t } = useLang();
-  const [active, setActive] = useState(0);
-  const [expanded, setExpanded] = useState("");
-  const visual = visuals[active % 3];
-  return (
-    <section id="services" className="section-pad bg-surface">
-      <div className="container-site service-grid">
-        <div>
-          <SectionLabel n="02">{t.services.kicker}</SectionLabel>
-          <h2 className="text-title whitespace-pre-line">{t.services.title}</h2>
-          <p className="text-sm leading-loose text-muted-foreground mt-6 max-w-sm">
-            {t.services.body}
-          </p>
-          <PointerMotion className="service-preview" strength={9}>
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={active}
-                src={visual?.src}
-                width={visual?.width}
-                height={visual?.height}
-                alt=""
-                loading="lazy"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
-              />
-            </AnimatePresence>
-            <span className="project-caption">{t.ui.concept}</span>
-          </PointerMotion>
-        </div>
-        <Accordion
-          type="single"
-          collapsible
-          value={expanded}
-          onValueChange={setExpanded}
-          className="border-b border-border self-center"
-        >
-          {t.services.items.map((s, i) => (
-            <AccordionItem
-              value={`service-${i}`}
-              key={i}
-              className="service-row"
-              onPointerEnter={(e) => {
-                if (e.pointerType === "mouse") setActive(i);
-              }}
-            >
-              <AccordionTrigger
-                className="service-trigger [&>svg:last-child]:hidden"
-                onFocus={() => setActive(i)}
-                onClick={() => setActive(i)}
-              >
-                <span className="service-number" dir="ltr">
-                  0{i + 1}
-                </span>
-                <span className="service-name min-w-0">{s.name}</span>
-                <ArrowUpRight aria-hidden className="direction-arrow size-5 text-brand" />
-              </AccordionTrigger>
-              <AccordionContent className="service-answer">
-                <p>{s.body}</p>
-                <img
-                  src={visuals[i % 3]?.small}
-                  width={640}
-                  height={640}
-                  alt=""
-                  loading="lazy"
-                  className="mt-6 aspect-[4/3] w-full object-cover md:hidden"
-                />
-                <ActionLink href="#contact" secondary className="mt-4">
-                  {t.ui.cta}
-                </ActionLink>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </div>
-    </section>
-  );
-}
-function Work() {
-  const { content: t, dir } = useLang();
-  return (
-    <section id="work" className="container-site section-pad">
-      <SectionLabel n="03">{t.work.kicker}</SectionLabel>
-      <div className="work-header">
-        <h2 className="text-title whitespace-pre-line">{t.work.title}</h2>
-        <p className="max-w-xs text-sm leading-loose text-muted-foreground">{t.work.body}</p>
-      </div>
-      <div className="work-grid">
-        {t.work.items.map((p, i) => {
-          const v = visuals[i];
-          if (!v) return null;
-          return (
-            <Reveal key={i} className="project">
-              <p className="project-index" dir="ltr">
-                0{i + 1} / 03
-              </p>
-              <DialogPrimitive.Root>
-                <DialogPrimitive.Trigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="block h-auto w-full whitespace-normal rounded-none p-0 text-start hover:bg-transparent"
-                    aria-label={`${t.ui.view} 0${i + 1}`}
-                  >
-                    <PointerMotion strength={5} className="project-visual">
-                      <img
-                        src={v.src}
-                        srcSet={`${v.small} 640w, ${v.src} 1280w`}
-                        sizes={
-                          i === 2
-                            ? "(min-width:768px) 80vw, 100vw"
-                            : "(min-width:768px) 50vw, 100vw"
-                        }
-                        width={v.width}
-                        height={v.height}
-                        loading="lazy"
-                        alt={t.ui.concept}
-                      />
-                      <span className="project-caption">{t.ui.concept}</span>
-                    </PointerMotion>
-                    <div className="project-heading">
-                      <h3>{p.name}</h3>
-                      <ArrowUpRight className="direction-arrow size-6 text-brand" />
-                    </div>
-                    <div className="project-meta">
-                      <span>{p.category}</span>
-                      <span>—</span>
-                      <span>{p.location}</span>
-                    </div>
-                    <p className="mt-4 text-sm text-muted-foreground">{p.outcome}</p>
-                  </Button>
-                </DialogPrimitive.Trigger>
-                <DialogPrimitive.Portal>
-                  <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-ink/60" />
-                  <DialogPrimitive.Content
-                    dir={dir}
-                    aria-describedby={`project-description-${i}`}
-                    className="fixed start-1/2 top-1/2 z-50 max-h-[90dvh] w-[calc(100%-32px)] max-w-3xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto bg-background p-6 rtl:translate-x-1/2 md:p-10"
-                  >
-                    <DialogPrimitive.Close asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute end-4 top-4 min-h-11 min-w-11 bg-background"
-                        aria-label={t.ui.close}
-                      >
-                        <X />
-                      </Button>
-                    </DialogPrimitive.Close>
-                    <img
-                      src={v.small}
-                      width={640}
-                      height={480}
-                      alt={t.ui.concept}
-                      className="mb-6 aspect-[16/9] w-full object-cover"
-                    />
-                    <DialogPrimitive.Title className="text-3xl">{p.name}</DialogPrimitive.Title>
-                    <p className="mt-3 text-xs text-muted-foreground">
-                      {p.category} · {p.location}
-                    </p>
-                    <DialogPrimitive.Description
-                      id={`project-description-${i}`}
-                      className="mt-6 text-sm leading-loose"
-                    >
-                      {p.detail}
-                    </DialogPrimitive.Description>
-                    <DialogPrimitive.Close asChild>
-                      <Button asChild variant="editorialLink" className="mt-6">
-                        <a href="#contact">
-                          {t.ui.cta}
-                          <ArrowUpRight className="direction-arrow" />
-                        </a>
-                      </Button>
-                    </DialogPrimitive.Close>
-                  </DialogPrimitive.Content>
-                </DialogPrimitive.Portal>
-              </DialogPrimitive.Root>
-            </Reveal>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-function FAQ() {
-  const { content: t } = useLang();
-  return (
-    <section className="section-pad border-t border-border">
-      <div className="container-site faq-grid">
-        <div>
-          <SectionLabel n="04">{t.faq.kicker}</SectionLabel>
-          <h2 className="text-title whitespace-pre-line">{t.faq.title}</h2>
-        </div>
-        <Accordion type="single" collapsible>
-          {t.faq.items.map((item, i) => (
-            <AccordionItem value={`faq-${i}`} key={i}>
-              <AccordionTrigger className="py-7 text-base gap-6">{item.question}</AccordionTrigger>
-              <AccordionContent className="text-sm leading-loose text-muted-foreground">
-                {item.answer}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </div>
-    </section>
-  );
-}
+
 function Contact() {
   const { content: t } = useLang();
+  const c = t.contact;
   return (
-    <>
-      <section id="contact" className="contact-band">
-        <div className="container-site">
-          <SectionLabel n="05">{t.contact.kicker}</SectionLabel>
-          <Reveal>
-            <h2 className="text-title">{t.contact.title}</h2>
-            <div className="mt-10 flex flex-wrap items-center gap-x-16 gap-y-8">
-              <p className="max-w-sm text-sm leading-loose">{t.contact.body}</p>
-              <div className="flex flex-wrap gap-6">
-                <ActionLink href="#enquiry">{t.ui.cta}</ActionLink>
-                <ActionLink href="#work" secondary>
-                  {t.ui.explore}
-                </ActionLink>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-      <section id="enquiry" className="container-site section-pad contact-layout">
-        <div>
-          <p className="text-xs mb-10">{t.nav.contact}</p>
-          <dl className="space-y-8">
-            {[
-              [t.contact.emailLabel, t.contact.email],
-              [t.contact.phoneLabel, t.contact.phone],
-              [t.contact.addressLabel, t.contact.address],
-            ].map(([label, value]) => (
-              <div key={label}>
-                <dt className="text-xs text-muted-foreground">{label}</dt>
-                <dd className="mt-3 text-lg">{value}</dd>
+    <section id="contact" className="section-pad">
+      <div className="container-site grid gap-12 lg:grid-cols-[1fr_1.4fr]">
+        <Reveal>
+          <Kicker>{c.kicker}</Kicker>
+          <h2 className="mt-4 text-title">{c.title}</h2>
+          <dl className="mt-10 space-y-6">
+            {[[c.phoneLabel, c.phone], [c.emailLabel, c.email], [c.addressLabel, c.address]].map(([l, v]) => (
+              <div key={l} className="border-s-2 border-brand ps-4">
+                <dt className="text-sm text-muted-foreground">{l}</dt>
+                <Placeholder as="dd" className="mt-1 text-lg font-bold">{v}</Placeholder>
               </div>
             ))}
           </dl>
-        </div>
-        <ContactForm />
-      </section>
-    </>
+        </Reveal>
+        <Reveal index={1}><CursorGlow className="p-6 md:p-8"><ContactForm /></CursorGlow></Reveal>
+      </div>
+    </section>
   );
 }
+
 function Home() {
   return (
-    <div className="page-enter">
+    <>
       <Hero />
-      <About />
+      <Intro />
       <Services />
-      <Work />
-      <FAQ />
+      <Benefits />
+      <Visit />
       <Contact />
-    </div>
+    </>
   );
 }
