@@ -61,7 +61,7 @@ function Hero() {
   const { content: t } = useLang();
   return (
     <section id="top" className="hero">
-      <PointerMotion strength={7} className="hero-media">
+      <PointerMotion strength={7} trackParent className="hero-media">
         <img
           src={hero}
           srcSet={`${heroSmall} 640w, ${hero} 1280w`}
