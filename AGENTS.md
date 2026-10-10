@@ -8,3 +8,10 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+# Project rules
+
+- All site copy lives in `src/content/placeholders.ts` (EN) and `placeholders.ar.ts` (AR, typed to the EN shape); components read via `useLang().t`. Why: bilingual by construction, no hardcoded strings.
+- Language state is a client context that sets `<html lang dir>`; layouts use Tailwind logical properties only. Why: RTL mirroring without per-component forks.
+- Animations go through `src/components/site/motion.tsx` (`Reveal`, `useMotionPreset`). Why: one place enforces reduced-motion fallbacks and timing tokens.
+- Type scale, grid, spacing and editorial utilities are `@utility` rules in `src/styles.css`. Why: single design source.
