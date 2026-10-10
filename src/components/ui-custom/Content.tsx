@@ -216,7 +216,7 @@ export function Testimonial({ quote, name, role, metric, tone = "light" }: Testi
 /* ---------- FAQ ---------- */
 export function FaqList({ items, defaultOpen }: { items: { q: string; a: string }[]; defaultOpen?: string | undefined }) {
   return (
-    <Accordion.Root type="single" collapsible defaultValue={defaultOpen} className="border-t border-line">
+    <Accordion.Root type="single" collapsible {...(defaultOpen ? { defaultValue: defaultOpen } : {})} className="border-t border-line">
       {items.map((f, i) => <FaqItem key={i} value={`faq-${i}`} q={f.q} a={f.a} />)}
     </Accordion.Root>
   );
