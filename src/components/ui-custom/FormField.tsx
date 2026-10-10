@@ -15,7 +15,7 @@ type InputProps = BaseProps & { multiline?: false | undefined; ref?: Ref<HTMLInp
 type AreaProps = BaseProps & { multiline: true; ref?: Ref<HTMLTextAreaElement> | undefined } & Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "id">;
 
 export function FormField(props: InputProps | AreaProps) {
-  const { id, label, hint, error, optionalLabel, demo, className, ...rest } = props;
+  const { id, label, hint, error, optionalLabel, demo, className, multiline, ...rest } = props;
   const describedBy = [hint && `${id}-hint`, error && `${id}-err`].filter(Boolean).join(" ") || undefined;
   const common = {
     id,
@@ -30,7 +30,7 @@ export function FormField(props: InputProps | AreaProps) {
         {label}
         {optionalLabel && <span className="ms-2 normal-case tracking-normal">({optionalLabel})</span>}
       </label>
-      {props.multiline ? (
+      {multiline ? (
         <textarea rows={5} {...common} {...(rest as Omit<AreaProps, keyof BaseProps | "className">)} />
       ) : (
         <input {...common} {...(rest as Omit<InputProps, keyof BaseProps | "className">)} />
